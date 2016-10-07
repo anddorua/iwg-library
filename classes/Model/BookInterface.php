@@ -37,12 +37,12 @@ interface BookInterface
      * @param $year int
      * @return void
      */
-    public function setYearofissue($year);
+    public function setYearOfIssue($year);
 
     /**
      * @return int
      */
-    public function getYearofissue();
+    public function getYearOfIssue();
 
     /**
      * @param $author AuthorInterface

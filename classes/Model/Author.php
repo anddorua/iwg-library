@@ -49,7 +49,7 @@ class Author implements AuthorInterface
 
     public function setName($name)
     {
-        $this->$name = $name;
+        $this->name = $name;
     }
 
     public function getName()

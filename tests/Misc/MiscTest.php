@@ -6,7 +6,7 @@
  * Time: 22:17
  */
 
-namespace Misc;
+namespace Test\Misc;
 
 use PHPUnit\Framework\TestCase;
 
