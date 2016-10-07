@@ -1,33 +1,80 @@
 <?php
 /**
+ * Model/Author.php
+ *
  * Created by PhpStorm.
  * User: andrey
- * Date: 06.10.16
- * Time: 22:48
+ * Date: 07.10.16
+ * Time: 21:40
  */
 
 namespace Model;
 
-
-class Author extends AbstractEntity implements AuthorInterface
+/**
+ * Class Author
+ * @package Model
+ * @Entity @Table(name="authors")
+ */
+class Author implements AuthorInterface
 {
-    protected $_id;
-    protected $_name;
-    protected $_fname;
-    protected $_yearofbirth;
+    /**
+     * @var int
+     * @Id @Column(type="integer")
+     * @GeneratedValue
+     */
+    protected $id;
 
     /**
-     * Author constructor.
-     * @param $_name
-     * @param $_fname
-     * @param $_yearofbirth
+     * @var string
+     * @Column(type="string")
      */
-    public function __construct($_name, $_fname, $_yearofbirth)
+    protected $name;
+
+    /**
+     * @var string
+     * @Column(type="string")
+     */
+    protected $fName;
+
+    /**
+     * @var int
+     * @Column(type="integer")
+     */
+    protected $yearOfBirth;
+
+    public function getId()
     {
-        $this->setName($_name);
-        $this->setFname($_fname);
-        $this->setYearofbirth($_yearofbirth);
+        return $this->id;
     }
 
+    public function setName($name)
+    {
+        $this->$name = $name;
+    }
+
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    public function setFName($fName)
+    {
+        $this->fName = $fName;
+    }
+
+    public function getFName()
+    {
+        return $this->fName;
+    }
+
+    public function setYearOfBirth($year)
+    {
+        $this->yearOfBirth = $year;
+    }
+
+    public function getYearOfBirth()
+    {
+        return $this->yearOfBirth;
+    }
 
 }

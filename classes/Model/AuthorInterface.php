@@ -13,12 +13,6 @@ interface AuthorInterface
 {
 
     /**
-     * @param $id int
-     * @return void
-     */
-    public function setId($id);
-
-    /**
      * @return int
      */
     public function getId();
@@ -38,21 +32,21 @@ interface AuthorInterface
      * @param $fName string
      * @return void
      */
-    public function setFname($fName);
+    public function setFName($fName);
 
     /**
      * @return string
      */
-    public function getFname();
+    public function getFName();
 
     /**
      * @param $year int
      * @return void
      */
-    public function setYearofbirth($year);
+    public function setYearOfBirth($year);
 
     /**
      * @return int
      */
-    public function getYearofbirth();
+    public function getYearOfBirth();
 }
