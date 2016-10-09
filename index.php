@@ -26,8 +26,25 @@
 
 require __DIR__ . '/vendor/autoload.php';
 
-/** @var $app Silex\Application\ */
+/** @var $app Silex\Application */
 $app = new Silex\Application();
-$app->mount('categories', new Controller\Category());
+$app['debug'] = true;
 
-echo "done.\n";
+$app->register(new Silex\Provider\MonologServiceProvider(), array(
+    'monolog.logfile' => __DIR__.'/development.log',
+));
+
+$app->register(new Silex\Provider\DoctrineServiceProvider(), array(
+    'db.options' => require('config/dbal.php'),
+));
+
+$app->register(new \ServiceProvider\EMServiceProvider(), [
+    'em.devMode' => true,
+]);
+
+$app->mount('categories', new Controller\Category());
+$app->get('/', function(){
+    return "Hello from root";
+});
+$app->run();
+//echo "done.\n";

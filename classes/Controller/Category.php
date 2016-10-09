@@ -9,6 +9,7 @@
 namespace Controller;
 
 
+use Doctrine\ORM\EntityManager;
 use Silex\Api\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Silex\Application;
@@ -18,7 +19,7 @@ class Category implements ControllerProviderInterface
 
     public function connect(Application $app)
     {
-        /** @var  $controllers ControllerCollection */
+        /** @var ControllerCollection $controllers  */
         $controllers = $app['controllers_factory'];
         $controllers->get('/', [$this, 'getList']);
         return $controllers;
@@ -26,6 +27,9 @@ class Category implements ControllerProviderInterface
 
     public function getList(Application $app)
     {
-        return "Hello";
+        /** @var EntityManager $em */
+        $em = $app['em'];
+        $cats = $em->getRepository('Model\\Category')->findAll();
+        return "Cats count:" . count($cats);
     }
 }
