@@ -12,57 +12,11 @@
 namespace Test\Model;
 
 use Model\Author;
-use Doctrine\ORM\Tools\Setup;
-use Doctrine\ORM\EntityManager;
-use Doctrine\ORM\Tools\SchemaTool;
-use PHPUnit_Extensions_Database_TestCase;
+use Model\AuthorInterface;
+use Test\Model\IWGModelTestCase;
 
-class AuthorTest extends PHPUnit_Extensions_Database_TestCase
+class AuthorTest extends IWGModelTestCase
 {
-
-    /** @var  EntityManager */
-    protected static $entity_manager;
-    /** @var  \Doctrine\ORM\Tools\SchemaTool */
-    protected static $schema_tool;
-
-    private static function getEntityManager()
-    {
-        $isDevMode = true;
-        $config = Setup::createAnnotationMetadataConfiguration([__DIR__ . '/../../classes/Model'], $isDevMode);
-        $conn = [
-            'url' => 'sqlite:///:memory:'
-        ];
-        return EntityManager::create(['driver' => 'pdo_sqlite', 'memory' => true], $config);
-    }
-
-    public static function setUpBeforeClass()
-    {
-        self::$entity_manager = self::getEntityManager();
-        self::$entity_manager->clear();
-        self::$schema_tool = new SchemaTool(self::$entity_manager);
-        self::$schema_tool->createSchema(self::$entity_manager->getMetadataFactory()->getAllMetadata());
-    }
-
-    public static function tearDownAfterClass()
-    {
-        self::$schema_tool->dropDatabase();
-    }
-
-    public function getConnection()
-    {
-        // create entity manager following the doctrine way
-        // init database schema
-        // get pdo
-        $pdo = self::$entity_manager->getConnection()->getWrappedConnection();
-        // create connection
-        return $this->createDefaultDBConnection($pdo, ':memory:');
-    }
-
-    protected function getDataSet()
-    {
-        return $this->createFlatXMLDataSet(__DIR__ . '/fixtures/default_data.xml');
-    }
-
 
     public function testAuthorPersist()
     {
@@ -73,25 +27,38 @@ class AuthorTest extends PHPUnit_Extensions_Database_TestCase
             $author->setYearOfBirth(1800);
             self::$entity_manager->persist($author);
             self::$entity_manager->flush();
-
-            $repo = self::$entity_manager->getRepository('Model\\Author');
-            $authors = $repo->findAll();
-            $this->assertNotEmpty($authors);
-            $this->assertEquals(1, count($authors), 'authors should be counted as 1');
-
+            $this->authorReading();
         } catch (\Exception $e) {
             $this->fail($e->getMessage());
         }
         $this->assertTrue(true, "author created successfully");
     }
 
-    public function testAuthorFound()
+    /**
+     * @depends testAuthorPersist
+     */
+    public function testAuthorReading()
     {
-        $this->markTestIncomplete('we do not save state between methods');
+        $this->markTestSkipped("skipped");
         $repo = self::$entity_manager->getRepository('Model\\Author');
+        /** @var  $authors AuthorInterface[] */
         $authors = $repo->findAll();
         $this->assertNotEmpty($authors);
-/*        $author = $repo->findOneBy(['name' => 'Ben']);
-        $this->assertNotNull($author);*/
+        $this->assertEquals(1, count($authors), 'authors should be counted as 1');
+        $this->assertEquals('Ben', $authors[0]->getName(), 'name should be same as created');
+        $this->assertEquals('Franklin', $authors[0]->getFName(), 'FName should be same as created');
+        $this->assertEquals(1800, $authors[0]->getYearOfBirth(), 'YOB should be same as created');
+    }
+
+    private function authorReading()
+    {
+        $repo = self::$entity_manager->getRepository('Model\\Author');
+        /** @var  $authors AuthorInterface[] */
+        $authors = $repo->findAll();
+        $this->assertNotEmpty($authors);
+        $this->assertEquals(1, count($authors), 'authors should be counted as 1');
+        $this->assertEquals('Ben', $authors[0]->getName(), 'name should be same as created');
+        $this->assertEquals('Franklin', $authors[0]->getFName(), 'FName should be same as created');
+        $this->assertEquals(1800, $authors[0]->getYearOfBirth(), 'YOB should be same as created');
     }
 }

@@ -9,11 +9,13 @@
  */
 
 namespace Model;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Class Author
  * @package Model
- * @Entity @Table(name="authors")
+ * @Entity
+ * @Table(name="authors")
  */
 class Author implements AuthorInterface
 {
@@ -41,6 +43,22 @@ class Author implements AuthorInterface
      * @Column(type="integer")
      */
     protected $yearOfBirth;
+
+
+    /**
+     * @ManyToMany(targetEntity="Book", mappedBy="authors")
+     * @var BookInterface[]
+     */
+    protected $books = null;
+
+    /**
+     * Author constructor.
+     */
+    public function __construct()
+    {
+        $this->books = new ArrayCollection();
+    }
+
 
     public function getId()
     {
@@ -76,5 +94,11 @@ class Author implements AuthorInterface
     {
         return $this->yearOfBirth;
     }
+
+    public function assignedBook($book)
+    {
+        $this->books[] = $book;
+    }
+
 
 }

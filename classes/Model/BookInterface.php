@@ -9,14 +9,10 @@
 namespace Model;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 interface BookInterface
 {
-    /**
-     * @param $id int
-     * @return void
-     */
-    public function setId($id);
-
     /**
      * @return int
      */
@@ -48,12 +44,12 @@ interface BookInterface
      * @param $author AuthorInterface
      * @return void
      */
-    public function setAuthor($author);
+    public function assignAuthor($author);
 
     /**
-     * @return AuthorInterface
+     * @return AuthorInterface[]
      */
-    public function getAuthor();
+    public function getAuthors();
 
     /**
      * @param $category CategoryInterface

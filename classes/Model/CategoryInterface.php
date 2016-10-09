@@ -9,14 +9,10 @@
 namespace Model;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 interface CategoryInterface
 {
-    /**
-     * @param $id int
-     * @return void
-     */
-    public function setId($id);
-
     /**
      * @return int
      */
@@ -32,4 +28,16 @@ interface CategoryInterface
      * @return string
      */
     public function getName();
+
+    /**
+     * @param $book BookInterface
+     * @return void
+     */
+    public function assignedToBook($book);
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getBooks();
+
 }

@@ -5,13 +5,14 @@
  * Date: 08.10.16
  * Time: 0:31
  */
-
 namespace Model;
+
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Class Book
  * @package Model
- * @Entity(repositoryClass="BookRepository")
+ * @Entity
  * @Table(name="books")
  */
 class Book implements BookInterface
@@ -31,63 +32,79 @@ class Book implements BookInterface
     protected $name;
 
     /**
-     * @Column(type="int")
+     * @Column(type="integer")
      * @var int
      */
     protected $yearOfIssue;
 
     /**
-     * @var
+     * @ManyToMany(targetEntity="Author", inversedBy="books")
+     * @JoinTable(name="books_authors")
+     * @var AuthorInterface[]
      */
-    protected $author;
-    protected $category;
+    protected $authors; // many to many relation
 
     /**
-     *
+     * @ManyToOne(targetEntity="Category", inversedBy="books")
      */
+    protected $category;
+
+    public function __construct()
+    {
+        $this->authors = new ArrayCollection();
+    }
+
     public function getId()
     {
-        // TODO: Implement getId() method.
+        return $this->id;
     }
 
     public function setName($name)
     {
-        // TODO: Implement setName() method.
+        $this->name = $name;
     }
 
     public function getName()
     {
-        // TODO: Implement getName() method.
+        return $this->name;
     }
 
     public function setYearOfIssue($year)
     {
-        // TODO: Implement setYearOfIssue() method.
+        $this->yearOfIssue = $year;
     }
 
     public function getYearOfIssue()
     {
-        // TODO: Implement getYearOfIssue() method.
+        return $this->yearOfIssue;
     }
 
-    public function setAuthor($author)
+    public function assignAuthor($author)
     {
-        // TODO: Implement setAuthor() method.
+        $author->assignedBook($this);
+        $this->authors[] = $author;
     }
 
-    public function getAuthor()
+    public function getAuthors()
     {
-        // TODO: Implement getAuthor() method.
+        return $this->authors;
     }
 
+    /**
+     * @param CategoryInterface $category
+     */
     public function setCategory($category)
     {
-        // TODO: Implement setCategory() method.
+        $category->assignedToBook($this);
+        $this->category = $category;
     }
 
+    /**
+     * @return CategoryInterface
+     */
     public function getCategory()
     {
-        // TODO: Implement getCategory() method.
+        return $this->category;
     }
 
 

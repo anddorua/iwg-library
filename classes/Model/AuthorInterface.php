@@ -49,4 +49,10 @@ interface AuthorInterface
      * @return int
      */
     public function getYearOfBirth();
+
+    /**
+     * @param $book BookInterface
+     * @return void
+     */
+    public function assignedBook($book);
 }
