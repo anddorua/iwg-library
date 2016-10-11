@@ -42,6 +42,10 @@ $app->register(new \ServiceProvider\EMServiceProvider(), [
     'em.devMode' => true,
 ]);
 
+$app->register(new \Silex\Provider\SerializerServiceProvider());
+
+$app->register(new Silex\Provider\VarDumperServiceProvider());
+
 $app->mount('categories', new Controller\Category());
 $app->get('/', function(){
     return "Hello from root";
