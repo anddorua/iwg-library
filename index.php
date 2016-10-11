@@ -46,6 +46,12 @@ $app->register(new \Silex\Provider\SerializerServiceProvider());
 
 $app->register(new Silex\Provider\VarDumperServiceProvider());
 
+$app->register(new Silex\Provider\ValidatorServiceProvider());
+
+$app->register(new \ServiceProvider\DefaultFormatProvider(), [
+    'default_format.support' => ['json', 'xml'],
+]);
+
 $app->mount('categories', new Controller\Category());
 $app->get('/', function(){
     return "Hello from root";

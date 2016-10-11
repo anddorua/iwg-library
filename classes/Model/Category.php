@@ -8,6 +8,8 @@
 
 namespace Model;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Category
@@ -23,12 +25,14 @@ class Category implements CategoryInterface
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
+     * @Groups({"default"})
      */
     protected $id;
 
     /**
      * @var string
      * @Column(type="string")
+     * @Groups({"default"})
      */
     protected $name;
 
@@ -37,6 +41,11 @@ class Category implements CategoryInterface
      * @var BookInterface[]
      */
     protected $books = null;
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
+    }
 
     /**
      * Category constructor.
