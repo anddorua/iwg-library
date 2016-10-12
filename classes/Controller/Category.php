@@ -57,7 +57,7 @@ class Category implements ControllerProviderInterface
                 'Content-Type' => $request->getMimeType($format),
             ]);
         }
-        return new Response($app['serializer']->serialize($category, $format), 200, [
+        return new Response($app['serializer']->serialize($category, $format, ['enable_annotations' => true]), 200, [
             'Content-Type' => $request->getMimeType($format),
         ]);
     }

@@ -39,6 +39,8 @@ class Category implements CategoryInterface
     /**
      * @OneToMany(targetEntity="Book", mappedBy="category")
      * @var BookInterface[]
+     * @MaxDepth(1)
+     * @Exclude
      */
     protected $books = null;
 
