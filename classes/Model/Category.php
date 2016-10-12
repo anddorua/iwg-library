@@ -69,6 +69,14 @@ class Category implements CategoryInterface
     }
 
     /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @param string $name
      * @return void
      */

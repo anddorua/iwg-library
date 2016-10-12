@@ -53,6 +53,8 @@ $app->register(new \ServiceProvider\DefaultFormatProvider(), [
 ]);
 
 $app->mount('categories', new Controller\Category());
+$app->mount('authors', new Controller\Author());
+$app->mount('books', new Controller\Book());
 $app->get('/', function(){
     return "Hello from root";
 });

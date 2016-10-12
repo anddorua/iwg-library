@@ -8,6 +8,8 @@
 namespace Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Class Book
@@ -22,18 +24,21 @@ class Book implements BookInterface
      * @Column(type="integer")
      * @GeneratedValue
      * @var int
+     * @Groups({"default"})
      */
     protected $id;
 
     /**
      * @Column(type="string")
      * @var string
+     * @Groups({"default"})
      */
     protected $name;
 
     /**
      * @Column(type="integer")
      * @var int
+     * @Groups({"default"})
      */
     protected $yearOfIssue;
 
@@ -41,17 +46,26 @@ class Book implements BookInterface
      * @ManyToMany(targetEntity="Author", inversedBy="books")
      * @JoinTable(name="books_authors")
      * @var AuthorInterface[]
+     * @Groups({"default"})
      */
     protected $authors; // many to many relation
 
     /**
      * @ManyToOne(targetEntity="Category", inversedBy="books")
+     * @Groups({"default"})
      */
     protected $category;
 
     public function __construct()
     {
         $this->authors = new ArrayCollection();
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('yearOfIssue', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('yearOfIssue', new Assert\Type(['type' => 'integer']));
     }
 
     public function getId()

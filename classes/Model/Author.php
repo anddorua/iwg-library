@@ -10,6 +10,9 @@
 
 namespace Model;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Mapping\ClassMetadata;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 /**
  * Class Author
@@ -23,24 +26,28 @@ class Author implements AuthorInterface
      * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
+     * @Groups({"default"})
      */
     protected $id;
 
     /**
      * @var string
      * @Column(type="string")
+     * @Groups({"default"})
      */
     protected $name;
 
     /**
      * @var string
      * @Column(type="string")
+     * @Groups({"default"})
      */
     protected $fName;
 
     /**
      * @var int
      * @Column(type="integer")
+     * @Groups({"default"})
      */
     protected $yearOfBirth;
 
@@ -57,6 +64,14 @@ class Author implements AuthorInterface
     public function __construct()
     {
         $this->books = new ArrayCollection();
+    }
+
+    public static function loadValidatorMetadata(ClassMetadata $metadata)
+    {
+        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('fName', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('yearOfBirth', new Assert\NotBlank());
+        $metadata->addPropertyConstraint('yearOfBirth', new Assert\Type(['type' => 'integer']));
     }
 
 
