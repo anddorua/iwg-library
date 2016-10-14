@@ -11,10 +11,7 @@ namespace ServiceProvider;
 
 use Pimple\Container;
 use Pimple\ServiceProviderInterface;
-use Silex\Api\EventListenerProviderInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 
 class DefaultFormatProvider implements ServiceProviderInterface
 {

@@ -52,11 +52,54 @@ $app->register(new \ServiceProvider\DefaultFormatProvider(), [
     'default_format.support' => ['json', 'xml'],
 ]);
 
+$app->register(new \ServiceProvider\RequestFormatProvider());
+
+$app->register(new \ServiceProvider\JMSServiceProvider(), [
+    'jms.metadata-dir' => __DIR__ . "/config/metadata",
+]);
+
 $app->mount('categories', new Controller\Category());
 $app->mount('authors', new Controller\Author());
 $app->mount('books', new Controller\Book());
-$app->get('/', function(){
-    return "Hello from root";
+$app->get('/', function() use ($app) {
+    return $app->redirect('/front/index.html');
 });
+
+$app->error(function (\Exception\EModel $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+    $format = $app['default_format']($request);
+    return new \Symfony\Component\HttpFoundation\Response($app['serializer']->serialize(
+        [
+            'message' => $e->getMessage(),
+            'type' => get_class($e),
+        ], $format), $e->getCode(), [
+            'Content-Type' => $request->getMimeType($format),
+        ]
+    );
+});
+
+$app->error(function (\Exception\EValidation $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+    $format = $app['default_format']($request);
+    return new \Symfony\Component\HttpFoundation\Response($app['serializer']->serialize(
+        [
+            'message' => $e->getMessage(),
+            'type' => get_class($e),
+            'errors' => $e->getValidationErrors(),
+        ], $format), $e->getCode(), [
+            'Content-Type' => $request->getMimeType($format),
+        ]
+    );
+});
+
+$app->error(function (\Exception\EOperationDeny $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+    $format = $app['default_format']($request);
+    return new \Symfony\Component\HttpFoundation\Response($app['serializer']->serialize(
+        [
+            'message' => $e->getMessage(),
+            'type' => get_class($e),
+        ], $format), $e->getCode(), [
+            'Content-Type' => $request->getMimeType($format),
+        ]
+    );
+});
+
 $app->run();
-//echo "done.\n";

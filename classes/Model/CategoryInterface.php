@@ -40,4 +40,10 @@ interface CategoryInterface
      */
     public function getBooks();
 
+    /**
+     * @param CategoryInterface $src
+     * @return mixed
+     */
+    public function assignOwnFields(CategoryInterface $src);
+
 }

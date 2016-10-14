@@ -63,9 +63,16 @@ class Book implements BookInterface
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
-        $metadata->addPropertyConstraint('yearOfIssue', new Assert\NotBlank());
-        $metadata->addPropertyConstraint('yearOfIssue', new Assert\Type(['type' => 'integer']));
+        $metadata->addPropertyConstraint('name', new Assert\NotBlank([
+            'groups' => ['creation'],
+        ]));
+        $metadata->addPropertyConstraint('yearOfIssue', new Assert\NotBlank([
+            'groups' => ['creation'],
+        ]));
+        $metadata->addPropertyConstraint('yearOfIssue', new Assert\Type([
+            'type' => 'integer',
+            'groups' => ['creation'],
+        ]));
     }
 
     public function getId()
@@ -121,5 +128,18 @@ class Book implements BookInterface
         return $this->category;
     }
 
+    public function detachAuthors()
+    {
+        foreach($this->authors as $author) {
+            $author->detachedBook($this);
+        }
+        $this->authors->clear();
+    }
+
+    public function assignOwnFields(BookInterface $src)
+    {
+        $this->setName($src->getName());
+        $this->setYearOfIssue($src->getYearOfIssue());
+    }
 
 }

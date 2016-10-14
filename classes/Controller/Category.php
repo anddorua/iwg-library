@@ -8,81 +8,66 @@
 
 namespace Controller;
 
-
-use Doctrine\ORM\EntityManager;
-use Silex\Api\ControllerProviderInterface;
-use Silex\ControllerCollection;
-use Silex\Application;
+use Exception\EOperationDeny;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class Category implements ControllerProviderInterface
+use Doctrine\ORM\EntityManager;
+use Exception\EModel;
+use Silex\ControllerCollection;
+use Silex\Application;
+use JMS\Serializer;
+
+class Category extends UnifiedController
 {
+    public function __construct()
+    {
+        $this->entityClass = 'Model\\Category';
+    }
+
 
     public function connect(Application $app)
     {
         /** @var ControllerCollection $controllers  */
         $controllers = $app['controllers_factory'];
-        $controllers->get('/', [$this, 'getList'])->bind('category-list');
-        $controllers->get('/{id}', [$this, 'getSingle'])->bind('category');
-        $controllers->post('/', [$this, 'postEntity']);
+        $controllers->get('/', [$this, 'getListUnified'])->bind('category-list');
+        $controllers->get('/{id}', [$this, 'getSingleUnified'])->bind('category');
+        $controllers->post('/', [$this, 'postEntityUnified']);
+        $controllers->put('/{id}', [$this, 'putEntityUnified']);
+        $controllers->delete('/{id}', [$this, 'deleteSingleUnified']);
         return $controllers;
     }
 
-    public function getList(Application $app, Request $request)
+    protected function testCanDelete($author)
     {
-        /** @var EntityManager $em */
-        $em = $app['em'];
-        $categories = $em->getRepository('Model\\Category')->findAll();
-        $format = $app['default_format']($request);
-        return new Response($app['serializer']->serialize($categories, $format, ['groups' => ['default']]), 200, [
-            'Content-Type' => $request->getMimeType($format),
-        ]);
+        if ($author->getBooks()->count() > 0) {
+            throw new EOperationDeny("Category linked to books.", 409);
+        }
+    }
+
+    protected function getEntityLocation(Application $app, $entity)
+    {
+        return $app['url_generator']->generate('category', ['id' => $entity->getId()]);
     }
 
     /**
-     * @param Application $app
-     * @param $id integer
-     * @param $request Request
-     * @return Response
+     * @param EntityManager $em
+     * @param int $id
+     * @return \Model\Category
+     * @throws EModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
-    public function getSingle(Application $app, Request $request, $id)
+    public static function findCategory(EntityManager $em, $id)
     {
-        /** @var EntityManager $em */
-        $em = $app['em'];
-        $category = $em->find('Model\\Category', $id);
-        $format = $app['default_format']($request);
-        if ($category === null) {
-            return new Response($app['serializer']->serialize(['message' => "Category $id not found"], $format), 404, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
-        }
-        return new Response($app['serializer']->serialize($category, $format, ['enable_annotations' => true]), 200, [
-            'Content-Type' => $request->getMimeType($format),
-        ]);
+        return self::findSingleEntity($em, 'Model\\Category', $id);
     }
 
-    public function postEntity(Application $app, Request $request)
+    protected function assignOwnFields($entityDest, $entitySrc)
     {
-        /** @var \Model\Category $category */
-        $category = $app['serializer']->deserialize(
-            $request->getContent(), 'Model\\Category', 'json'
-        );
-
-        $format = $app['default_format']($request);
-        $errors = $app['validator']->validate($category);
-        if (count($errors) != 0) {
-            return new Response($app['serializer']->serialize($errors, $format), 400, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
-        }
-        /** @var EntityManager $em */
-        $em = $app['em'];
-        $em->persist($category);
-        $em->flush();
-        return new Response($app['serializer']->serialize($category, $format), 201, [
-            'Content-Type' => $request->getMimeType($format),
-            'Location' => $app['url_generator']->generate('category', ['id' => $category->getId()]),
-        ]);
+        $entityDest->assignOwnFields($entitySrc);
     }
+
+
 }

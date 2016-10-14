@@ -10,84 +10,59 @@ namespace Controller;
 
 
 use Doctrine\ORM\EntityManager;
-use Silex\Api\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Silex\Application;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Exception\EModel;
 
 
-class Author implements ControllerProviderInterface
+class Author extends UnifiedController
 {
+
+    public function __construct()
+    {
+        $this->entityClass = 'Model\\Author';
+    }
+
+    protected function getEntityLocation(Application $app, $entity)
+    {
+        return $app['url_generator']->generate('author', ['id' => $entity->getId()]);
+    }
+
+    protected function assignOwnFields($entityDest, $entitySrc)
+    {
+        $entityDest->assignOwnFields($entitySrc);
+    }
 
     public function connect(Application $app)
     {
         /** @var ControllerCollection $controllers  */
         $controllers = $app['controllers_factory'];
-        $controllers->get('/', [$this, 'getList'])->bind('author-list');
-        $controllers->get('/{id}', [$this, 'getSingle'])->bind('author');
-        $controllers->post('/', [$this, 'postEntity']);
+        $controllers->get('/', [$this, 'getListUnified'])->bind('author-list');
+        $controllers->get('/{id}', [$this, 'getSingleUnified'])->bind('author');
+        $controllers->post('/', [$this, 'postEntityUnified']);
+        $controllers->put('/{id}', [$this, 'putEntityUnified']);
+        $controllers->delete('/{id}', [$this, 'deleteSingleUnified']);
         return $controllers;
     }
 
-    public function getList(Application $app, Request $request)
+    protected function testCanDelete($author)
     {
-        /** @var EntityManager $em */
-        $em = $app['em'];
-        $categories = $em->getRepository('Model\\Author')->findAll();
-        $format = $app['default_format']($request);
-        return new Response($app['serializer']->serialize($categories, $format, ['groups' => ['default']]), 200, [
-            'Content-Type' => $request->getMimeType($format),
-        ]);
+        if ($author->getBooks()->count() > 0) {
+            throw new \Exception\EOperationDeny("Author linked to books.", 409);
+        }
     }
 
     /**
-     * @param Application $app
-     * @param $id integer
-     * @param $request Request
-     * @return Response
+     * @param EntityManager $em
+     * @param int $id
+     * @return \Model\Author
+     * @throws EModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
      */
-    public function getSingle(Application $app, Request $request, $id)
+    public static function findAuthor(EntityManager $em, $id)
     {
-        /** @var EntityManager $em */
-        $em = $app['em'];
-        $category = $em->find('Model\\Author', $id);
-        $format = $app['default_format']($request);
-        if ($category === null) {
-            return new Response($app['serializer']->serialize(['message' => "Author $id not found"], $format), 404, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
-        }
-        return new Response($app['serializer']->serialize($category, $format, ['groups' => ['default']]), 200, [
-            'Content-Type' => $request->getMimeType($format),
-        ]);
+        return self::findSingleEntity($em, 'Model\\Author', $id);
     }
-
-    public function postEntity(Application $app, Request $request)
-    {
-        list($commonContentType, $requestFormat) = explode('/',$request->getContentType());
-        $requestFormat = !empty($requestFormat) ? $requestFormat : $request->getContentType();
-        /** @var \Model\Author $author */
-        $author = $app['serializer']->deserialize(
-            $request->getContent(), 'Model\\Author', $requestFormat
-        );
-
-        $format = $app['default_format']($request);
-        $errors = $app['validator']->validate($author);
-        if (count($errors) != 0) {
-            return new Response($app['serializer']->serialize($errors, $format), 400, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
-        }
-        /** @var EntityManager $em */
-        $em = $app['em'];
-        $em->persist($author);
-        $em->flush();
-        return new Response($app['serializer']->serialize($author, $format), 201, [
-            'Content-Type' => $request->getMimeType($format),
-            'Location' => $app['url_generator']->generate('author', ['id' => $author->getId()]),
-        ]);
-    }
-
-
 }

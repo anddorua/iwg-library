@@ -9,24 +9,50 @@
 namespace Controller;
 
 use Doctrine\ORM\EntityManager;
+use Model\Author;
 use Silex\Api\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Exception\EModel;
+use Exception\EValidation;
 
-class Book implements ControllerProviderInterface
+class Book extends UnifiedController
 {
+
+    public function __construct()
+    {
+        $this->entityClass = 'Model\\Book';
+    }
 
     public function connect(Application $app)
     {
         /** @var ControllerCollection $controllers  */
         $controllers = $app['controllers_factory'];
-        $controllers->get('/', [$this, 'getList'])->bind('book-list');
-        $controllers->get('/{id}', [$this, 'getSingle'])->bind('book');
-        $controllers->post('/', [$this, 'postEntity']);
+        $controllers->get('/', [$this, 'getListUnified'])->bind('book-list');
+        $controllers->get('/{id}', [$this, 'getSingleUnified'])->bind('book');
+        $controllers->post('/', [$this, 'postEntityUnified']);
+        $controllers->put('/{id}', [$this, 'putEntityUnified']);
         $controllers->put('/{id}/category', [$this, 'putCategory']);
+        $controllers->put('/{id}/authors', [$this, 'putAuthors']);
+        $controllers->delete('/{id}', [$this, 'deleteSingleUnified']);
         return $controllers;
+    }
+
+    protected function testCanDelete($book)
+    {
+        return;
+    }
+
+    protected function getEntityLocation(Application $app, $entity)
+    {
+        return $app['url_generator']->generate('book', ['id' => $entity->getId()]);
+    }
+
+    protected function assignOwnFields($entityDest, $entitySrc)
+    {
+        $entityDest->assignOwnFields($entitySrc);
     }
 
     public function getList(Application $app, Request $request)
@@ -35,7 +61,7 @@ class Book implements ControllerProviderInterface
         $em = $app['em'];
         $categories = $em->getRepository('Model\\Book')->findAll();
         $format = $app['default_format']($request);
-        return new Response($app['serializer']->serialize($categories, $format, ['groups' => ['default']]), 200, [
+        return new Response($app['jms']->serialize($categories, $format), 200, [
             'Content-Type' => $request->getMimeType($format),
         ]);
     }
@@ -45,83 +71,121 @@ class Book implements ControllerProviderInterface
      * @param $id integer
      * @param $request Request
      * @return Response
+     * @throws EModel
      */
     public function getSingle(Application $app, Request $request, $id)
     {
-        $format = $app['default_format']($request);
         /** @var EntityManager $em */
         $em = $app['em'];
         $book = $em->find('Model\\Book', $id);
         if ($book === null) {
-            return new Response($app['serializer']->serialize(['message' => "Book $id not found"], $format), 404, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
+            throw new EModel("Book $id not found", 404);
         }
-        return new Response($app['serializer']->serialize($book, $format, ['groups' => ['default']]), 200, [
+        $format = $app['default_format']($request);
+        return new Response($app['jms']->serialize($book, $format), 200, [
             'Content-Type' => $request->getMimeType($format),
         ]);
     }
 
     public function postEntity(Application $app, Request $request)
     {
-        list($commonContentType, $requestFormat) = explode('/',$request->getContentType());
-        $requestFormat = !empty($requestFormat) ? $requestFormat : $request->getContentType();
-        /** @var \Model\Book $author */
-        $book = $app['serializer']->deserialize(
-            $request->getContent(), 'Model\\Book', $requestFormat
+        /** @var \Model\Book $book */
+        $book = $app['jms']->deserialize(
+            $request->getContent(),
+            'Model\\Book',
+            $app['request_format']($request)
         );
 
-        $format = $app['default_format']($request);
-        $errors = $app['validator']->validate($book);
+        $errors = $app['validator']->validate($book, null, ['creation']);
         if (count($errors) != 0) {
-            return new Response($app['serializer']->serialize($errors, $format), 400, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
+            throw new EValidation("Validation errors", 400, $errors);
         }
+
         /** @var EntityManager $em */
         $em = $app['em'];
         $em->persist($book);
         $em->flush();
-        return new Response($app['serializer']->serialize($book, $format), 201, [
-            'Content-Type' => $request->getMimeType($format),
+        return new Response(null, 201, [
+            'Content-Type' => $request->getMimeType($app['default_format']($request)),
             'Location' => $app['url_generator']->generate('book', ['id' => $book->getId()]),
         ]);
     }
 
     public function putCategory(Application $app, Request $request, $id)
     {
-        list($commonContentType, $requestFormat) = explode('/',$request->getContentType());
-        $requestFormat = !empty($requestFormat) ? $requestFormat : $request->getContentType();
-        /** @var \Model\Category $category */
-        $category = $app['serializer']->deserialize(
-            $request->getContent(), 'Model\\Category', $requestFormat
+        /** @var \Model\Category $categoryToFind */
+        $categoryToFind = $app['jms']->deserialize(
+            $request->getContent(),
+            'Model\\Category',
+            $app['request_format']($request)
         );
 
-        $format = $app['default_format']($request);
         /** @var EntityManager $em */
         $em = $app['em'];
-        $category = $em->find('Model\\Category', $category->getId());
-        if ($category === null) {
-            return new Response("Category " . $category->getId() . " not found", 404, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
-        }
+        /** @var \Model\Category $category */
+        $category = \Controller\Category::findCategory($em, $categoryToFind->getId());
 
-        /** @var \Model\Book $book */
-        $book = $em->find('Model\\Book', $id);
-        if ($book === null) {
-            return new Response("Book $id not found", 404, [
-                'Content-Type' => $request->getMimeType($format),
-            ]);
-        }
+        $book = $this->findBook($em, $id);
 
         $book->setCategory($category);
         $em->persist($book);
         $em->flush();
 
+        $format = $app['default_format']($request);
         return new Response(null, 204, [
             'Content-Type' => $request->getMimeType($format),
         ]);
+    }
+
+    public function putAuthors(Application $app, Request $request, $id)
+    {
+        /** @var \Model\Author[] $authorsToFind */
+        $authorsToFind = $app['jms']->deserialize(
+            $request->getContent(),
+            'Doctrine\\Common\\Collections\\ArrayCollection<Model\\Author>',
+            $app['request_format']($request)
+        );
+
+        /** @var EntityManager $em */
+        $em = $app['em'];
+
+        $authors = array_map(function(Author $authorToFind) use ($em) {
+            return \Controller\Author::findAuthor($em, $authorToFind->getId());
+        }, $authorsToFind);
+
+        $book = $this->findBook($em, $id);
+        $book->detachAuthors();
+
+        array_walk($authors, function($author) use ($book, $em) {
+            $book->assignAuthor($author);
+            $em->persist($author);
+        });
+        $em->persist($book);
+        $em->flush();
+
+        $format = $app['default_format']($request);
+        return new Response(null, 204, [
+            'Content-Type' => $request->getMimeType($format),
+        ]);
+    }
+
+
+    /**
+     * @param EntityManager $em
+     * @param integer $id
+     * @return \Model\Book
+     * @throws EModel
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     * @throws \Doctrine\ORM\TransactionRequiredException
+     */
+    private function findBook(EntityManager $em, $id)
+    {
+        $book = $em->find('Model\\Book', $id);
+        if ($book === null) {
+            throw new EModel("Book $id not found", 404);
+        }
+        return $book;
     }
 
 }

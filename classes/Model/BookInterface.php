@@ -61,4 +61,9 @@ interface BookInterface
      * @return CategoryInterface
      */
     public function getCategory();
+
+    public function detachAuthors();
+
+    public function assignOwnFields(BookInterface $src);
+
 }

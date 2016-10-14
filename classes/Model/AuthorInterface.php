@@ -9,6 +9,8 @@
 namespace Model;
 
 
+use Doctrine\Common\Collections\ArrayCollection;
+
 interface AuthorInterface
 {
 
@@ -55,4 +57,22 @@ interface AuthorInterface
      * @return void
      */
     public function assignedBook($book);
+
+    /**
+     * @param $book BookInterface
+     * @return mixed
+     */
+    public function detachedBook($book);
+
+    /**
+     * @param AuthorInterface $src
+     * @return mixed
+     */
+    public function assignOwnFields(AuthorInterface $src);
+
+    /**
+     * @return ArrayCollection
+     */
+    public function getBooks();
+
 }

@@ -68,10 +68,19 @@ class Author implements AuthorInterface
 
     public static function loadValidatorMetadata(ClassMetadata $metadata)
     {
-        $metadata->addPropertyConstraint('name', new Assert\NotBlank());
-        $metadata->addPropertyConstraint('fName', new Assert\NotBlank());
-        $metadata->addPropertyConstraint('yearOfBirth', new Assert\NotBlank());
-        $metadata->addPropertyConstraint('yearOfBirth', new Assert\Type(['type' => 'integer']));
+        $metadata->addPropertyConstraint('name', new Assert\NotBlank([
+            'groups' => ['creation'],
+        ]));
+        $metadata->addPropertyConstraint('fName', new Assert\NotBlank([
+            'groups' => ['creation'],
+        ]));
+        $metadata->addPropertyConstraint('yearOfBirth', new Assert\NotBlank([
+            'groups' => ['creation'],
+        ]));
+        $metadata->addPropertyConstraint('yearOfBirth', new Assert\Type([
+            'type' => 'integer',
+            'groups' => ['creation'],
+        ]));
     }
 
 
@@ -113,6 +122,23 @@ class Author implements AuthorInterface
     public function assignedBook($book)
     {
         $this->books[] = $book;
+    }
+
+    public function detachedBook($book)
+    {
+        $this->books->removeElement($book);
+    }
+
+    public function assignOwnFields(AuthorInterface $src)
+    {
+        $this->setName($src->getName());
+        $this->setFName($src->getFName());
+        $this->setYearOfBirth($src->getYearOfBirth());
+    }
+
+    public function getBooks()
+    {
+        return $this->books;
     }
 
 
