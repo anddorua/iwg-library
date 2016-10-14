@@ -1,4 +1,23 @@
-angular.module('ui.bootstrap.demo', ['ui.bootstrap', 'iwg.lib.rest']).controller('TabsDemoCtrl', function ($scope, $window, librest) {
+angular.module('ui.bootstrap.demo', ['ui.bootstrap', 'iwg.lib.rest', 'iwg.lib.alert', 'ngResource'])
+
+    .config(['$resourceProvider', function($resourceProvider) {
+        // Don't strip trailing slashes from calculated URLs
+        $resourceProvider.defaults.stripTrailingSlashes = false;
+    }])
+
+    .controller('AlertDemoCtrl', function (alertService, $scope) {
+        $scope.alert = alertService;
+
+        $scope.addAlert = function(msg) {
+            $scope.alert.msg = msg;
+        };
+
+        $scope.closeAlert = function() {
+            $scope.alert.msg = "";
+        };
+    })
+
+    .controller('TabsDemoCtrl', function ($scope, $window, $resource, librest, alertService) {
   $scope.user = {
     isAuthorized: true,
     logout: function() {
@@ -12,30 +31,39 @@ angular.module('ui.bootstrap.demo', ['ui.bootstrap', 'iwg.lib.rest']).controller
       return this.list.find(function(item) { return item.id == id; });
   };
 
-  $scope.categories = {
-    list:[
-      { id: 1, name: "Name 1" },
-      { id: 2, name: "Name 2" },
-      { id: 3, name: "Name 3" },
-    ],
-    current: {},
-    get: getter,
-    add: function(name) {
-      var max = this.list.reduce(function(prev, cat){ return parseInt(cat.id) > prev ? parseInt(cat.id) : prev; }, 0);
-      this.list.push( { id: max + 1, name: name } );
-    },
-    update: function(id, name) {
-      var item = this.get(id);
-      item.name = name;
-    },
-    delete: function(id) {
-      var itemIndex = this.list.findIndex(function(item) { return item.id == id; });
-      if (itemIndex >= 0) {
-        this.list.splice(itemIndex, 1);
-        this.current = this.list.length > 0 ? this.list[itemIndex < this.list.length ? itemIndex : this.list.length - 1] : {};
-      }
-    },
-  };
+    $scope.categories = {
+        list:[],
+        current: {},
+        get: getter,
+        serverCategories: $resource('/categories/:id', { id: '@id' }),
+        fetchList: function(){
+            var list = this.serverCategories.query({ id: '' }, function(){
+                $scope.categories.list = list;
+            });
+        },
+        add: function(name) {
+            var result = this.serverCategories.save({}, { name: name }, function(){
+                $scope.categories.fetchList();
+            }, function(error){
+                alertService.msg = error;
+            });
+/*
+          var max = this.list.reduce(function(prev, cat){ return parseInt(cat.id) > prev ? parseInt(cat.id) : prev; }, 0);
+          this.list.push( { id: max + 1, name: name } );
+*/
+        },
+        update: function(id, name) {
+          var item = this.get(id);
+          item.name = name;
+        },
+        delete: function(id) {
+          var itemIndex = this.list.findIndex(function(item) { return item.id == id; });
+          if (itemIndex >= 0) {
+            this.list.splice(itemIndex, 1);
+            this.current = this.list.length > 0 ? this.list[itemIndex < this.list.length ? itemIndex : this.list.length - 1] : {};
+          }
+        }
+    };
 
   $scope.authors = {
     list:[
@@ -130,7 +158,7 @@ angular.module('ui.bootstrap.demo', ['ui.bootstrap', 'iwg.lib.rest']).controller
       idList.forEach(function(id){ 
         $scope.books.moveAuthorToBookList(id);
       });
-    },
+    }
   };
 
   $scope.$watchCollection('books.current', function(newCurrent, oldCurrent) {
@@ -144,11 +172,14 @@ angular.module('ui.bootstrap.demo', ['ui.bootstrap', 'iwg.lib.rest']).controller
   });
 
   $scope.$watch('active', function(newTab, oldTab){
-    console.log(newTab);
+    //console.log(newTab);
     //librest.sayHello("Hello from librest");
-    librest.categories.getList(function(data){
-      console.log(data);
-    });
+    //librest.categories.getList(function(data){
+    //  console.log(data);
+    //});
+      if (newTab == 2) {
+          $scope.categories.fetchList();
+      }
   });
 
 });

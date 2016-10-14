@@ -2,11 +2,13 @@
 
 // Declare app level module which depends on views, and components
 angular.module('myApp', [
-  'ngRoute',
-  'myApp.version',
-  'ui.bootstrap',
-  'ui.bootstrap.demo',
-  'iwg.lib.rest'
+    'ngRoute',
+    'myApp.version',
+    'ui.bootstrap',
+    'ui.bootstrap.demo',
+    'iwg.lib.rest',
+    'iwg.lib.alert',
+    'ngResource'
 ])
 /**
 .config(['$locationProvider', '$routeProvider', function($locationProvider, $routeProvider) {

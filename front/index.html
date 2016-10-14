@@ -40,6 +40,17 @@
     <hr />
   </div>
   -->
+  <div class="row>">
+    <!-- error alert -->
+    <div ng-controller="AlertDemoCtrl">
+      <script type="text/ng-template" id="alert.html">
+        <div ng-transclude></div>
+      </script>
+
+      <div class="col-md-12 alert-danger" uib-alert ng-show="alert.msg" close="closeAlert()">{{alert.msg}}</div>
+    </div>
+  </div>
+
   <div class="row">
     <uib-tabset active="active">
       <uib-tab index="0" heading="Books">
@@ -212,10 +223,12 @@
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>
   -->
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.8/angular-resource.js"></script>
   <script src="js/angular/angular-route.js"></script>
   <script src="js/angular/ui-bootstrap-2.2.0.js"></script>
   <script src="js/angular/ui-bootstrap-tpls-2.2.0.js"></script>
   <script src="services/restDataProvider.js"></script>
+  <script src="services/alertService.js"></script>
   <script src="controllers/tabsDemoCtrl.js"></script>
   <script src="js/app/app.js"></script>
   <!--
