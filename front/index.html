@@ -43,11 +43,7 @@
   <div class="row>">
     <!-- error alert -->
     <div ng-controller="AlertDemoCtrl">
-      <script type="text/ng-template" id="alert.html">
-        <div ng-transclude></div>
-      </script>
-
-      <div class="col-md-12 alert-danger" uib-alert ng-show="alert.msg" close="closeAlert()">{{alert.msg}}</div>
+      <div class="col-md-12 alert-danger" uib-alert ng-show="alert.msg" close="closeAlert()"><div ng-bind-html="alert.msg"></div></div>
     </div>
   </div>
 
@@ -62,19 +58,19 @@
 
               <div class="form-group">
                 <label for="book_name">{{books.current.id ? books.current.id : "ID"}}</label>
-                <input class="form-control" type="text" placeholder="name" id="book_name" ng-model="books.current.name">
+                <input class="form-control" type="text" placeholder="name" id="book_name" ng-model="books.bookNameSelected">
               </div>
 
               <div class="form-group">
                 <label for="book_year">Year of issue</label>
-                <input class="form-control" type="text" placeholder="year" id="book_year" ng-model="books.current.year">
+                <input class="form-control" type="text" placeholder="year" id="book_year" ng-model="books.bookYearOfIssueSelected">
               </div>
 
               <div class="form-group">
                 <label for="book_cat">Category</label>
                 <select size="1" class="form-control" id="book_cat"
                   ng-model="books.categorySelected"
-                  ng-options="category as category.name for category in categories.list track by category.id">
+                  ng-options="category as category.id + ':' + category.name for category in categories.list track by category.id">
                 </select>
               </div>
 
@@ -82,17 +78,12 @@
                 <label for="authors_list">Authors</label>
                 <select size="4" class="form-control" id="authors_list"
                   ng-model="books.bookAuthorSelected"
-                  ng-options="author as author.name for author in books.bookAuthors">
+                  ng-options="author as author.name + ' ' + author.f_name + ' ' + author.year_of_birth for author in books.bookAuthors">
                 </select>
               </div>
               <div class="clearfix">
               <button class="btn btn-primary btn-sm pull-right" ng-click="books.removeAuthor(books.bookAuthorSelected)">Remove author</button>
               </div>
-
-              <!--
-              <pre>{{ books.categorySelected | json }}</pre>
-              <pre>{{ books.current | json }}</pre>
-              -->
             </form>
           </div>
 
@@ -102,7 +93,7 @@
                 <label for="authors_full_list">Authors available</label>
                 <select size="10" class="form-control" id="authors_full_list"
                   ng-model="books.authorSrcListSelected"
-                  ng-options="author as author.name for author in books.authorSrcList">
+                  ng-options="author as author.name + ' ' + author.f_name + ' ' + author.year_of_birth for author in books.authorSrcList">
                 </select>
               </div>
               <button class="btn btn-primary btn-sm pull-right" ng-click="books.assignAuthor(books.authorSrcListSelected)">Assign to book</button>
@@ -111,8 +102,8 @@
 
         </div>
           <div class="well well-sm" style="margin-top: 20px;">
-            <button class="btn btn-primary btn-sm" ng-click="books.add(books.current.name, books.current.year, books.current.category_id, books.current.authors)">Add</button>
-            <button class="btn btn-success btn-sm" ng-click="books.update(books.current.id, books.current.name, books.current.year, books.current.category_id, books.current.authors)">Update</button>
+            <button class="btn btn-primary btn-sm" ng-click="books.add(books.bookNameSelected, books.bookYearOfIssueSelected, books.categorySelected, books.bookAuthors)">Add</button>
+            <button class="btn btn-success btn-sm" ng-click="books.update(books.current.id, books.bookNameSelected, books.bookYearOfIssueSelected, books.categorySelected, books.bookAuthors)">Update</button>
             <button class="btn btn-danger btn-sm" ng-click="books.delete(books.current.id)">Delete</button>
           </div>
         <div class="row">
@@ -124,7 +115,7 @@
             <select size="10" class="form-control" 
               ng-model="books.current"
               ng-init="books.current = books.list[0] ? books.list[0] : {}"
-              ng-options="book as book.id + ': ' + book.name + ' ' + book.year + ' ' + book.category_id for book in books.list track by book.id">
+              ng-options="book as book.id + ': ' + book.name + ' ' + book.year_of_issue + ' ' + book.category_id for book in books.list track by book.id">
             </select>
           </div>
         </div>
@@ -145,16 +136,16 @@
 
               <div class="form-group">
                 <label for="auth_fname">Family name:</label>
-                <input class="form-control" type="text" placeholder="family name" id="auth_fname" ng-model="authors.current.fname">
+                <input class="form-control" type="text" placeholder="family name" id="auth_fname" ng-model="authors.current.f_name">
               </div>
 
               <div class="form-group">
                 <label for="auth_yob">Year of birth:</label>
-                <input class="form-control" type="text" placeholder="year of birth" id="auth_yob" ng-model="authors.current.yearOfBirth">
+                <input class="form-control" type="text" placeholder="year of birth" id="auth_yob" ng-model="authors.current.year_of_birth">
               </div>
 
-              <button class="btn btn-primary btn-sm" ng-click="authors.add(authors.current.name, authors.current.fname, authors.current.yearOfBirth)">Add</button>
-              <button class="btn btn-success btn-sm" ng-click="authors.update(authors.current.id, authors.current.name, authors.current.fname, authors.current.yearOfBirth)">Update</button>
+              <button class="btn btn-primary btn-sm" ng-click="authors.add(authors.current.name, authors.current.f_name, authors.current.year_of_birth)">Add</button>
+              <button class="btn btn-success btn-sm" ng-click="authors.update(authors.current.id, authors.current.name, authors.current.f_name, authors.current.year_of_birth)">Update</button>
               <button class="btn btn-danger btn-sm" ng-click="authors.delete(authors.current.id)">Delete</button>
             </form>
           </div>
@@ -164,7 +155,7 @@
             <select size="10" class="form-control" 
               ng-model="authors.current"
               ng-init="authors.current = authors.list[0] ? authors.list[0] : {}"
-              ng-options="author as author.id + ': ' + author.name + ' ' + author.fname + ' ' + author.yearOfBirth for author in authors.list track by author.id">
+              ng-options="author as author.id + ': ' + author.name + ' ' + author.f_name + ' ' + author.year_of_birth for author in authors.list track by author.id">
             </select>
           </div>
         </div>
@@ -206,6 +197,16 @@
       </uib-tab>
     </uib-tabset>
   </div>
+
+  <div class="row" ng-controller="TerminalCtrl" style="margin-top:20px;">
+    <button class="btn btn-sm" ng-click="clear()">Clear</button>
+    <div class="col-md-12" style="height: 200px; overflow: scroll; background-color: #122b40; color: white;">
+      <ng-repeat ng-repeat="line in lines">
+        {{ line.date | date : 'HH:mm:ss' }}: {{ line.text }}<br>
+      </ng-repeat>
+    </div>
+  </div>
+
 </div>
 <!--
   <ul class="menu">
@@ -215,9 +216,6 @@
 
   -->
 
-  <!--[if lt IE 7]>
-      <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
-  <![endif]-->
 
   <!-- In production use:
   <script src="//ajax.googleapis.com/ajax/libs/angularjs/x.x.x/angular.min.js"></script>

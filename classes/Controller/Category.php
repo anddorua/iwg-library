@@ -31,10 +31,10 @@ class Category extends UnifiedController
         /** @var ControllerCollection $controllers  */
         $controllers = $app['controllers_factory'];
         $controllers->get('/', [$this, 'getListUnified'])->bind('category-list');
-        $controllers->get('/{id}', [$this, 'getSingleUnified'])->bind('category');
+        $controllers->get('/{id}', [$this, 'getSingleUnified'])->bind('category')->assert('id', '\d+');
         $controllers->post('/', [$this, 'postEntityUnified']);
-        $controllers->put('/{id}', [$this, 'putEntityUnified']);
-        $controllers->delete('/{id}', [$this, 'deleteSingleUnified']);
+        $controllers->put('/{id}', [$this, 'putEntityUnified'])->assert('id', '\d+');
+        $controllers->delete('/{id}', [$this, 'deleteSingleUnified'])->assert('id', '\d+');
         return $controllers;
     }
 

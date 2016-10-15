@@ -31,12 +31,12 @@ class Book extends UnifiedController
         /** @var ControllerCollection $controllers  */
         $controllers = $app['controllers_factory'];
         $controllers->get('/', [$this, 'getListUnified'])->bind('book-list');
-        $controllers->get('/{id}', [$this, 'getSingleUnified'])->bind('book');
+        $controllers->get('/{id}', [$this, 'getSingleUnified'])->bind('book')->assert('id', '\d+');
         $controllers->post('/', [$this, 'postEntityUnified']);
-        $controllers->put('/{id}', [$this, 'putEntityUnified']);
-        $controllers->put('/{id}/category', [$this, 'putCategory']);
-        $controllers->put('/{id}/authors', [$this, 'putAuthors']);
-        $controllers->delete('/{id}', [$this, 'deleteSingleUnified']);
+        $controllers->put('/{id}', [$this, 'putEntityUnified'])->assert('id', '\d+');
+        $controllers->put('/{id}/category', [$this, 'putCategory'])->assert('id', '\d+');
+        $controllers->put('/{id}/authors', [$this, 'putAuthors'])->assert('id', '\d+');
+        $controllers->delete('/{id}', [$this, 'deleteSingleUnified'])->assert('id', '\d+');
         return $controllers;
     }
 
