@@ -1,4 +1,4 @@
-Model\Category:
+IWG\Model\Category:
   exclusion_policy: ALL
   properties:
     id:

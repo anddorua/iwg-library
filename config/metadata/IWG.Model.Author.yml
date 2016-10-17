@@ -1,4 +1,4 @@
-Model\Author:
+IWG\Model\Author:
   exclusion_policy: ALL
   properties:
     id:

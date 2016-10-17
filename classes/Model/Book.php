@@ -5,11 +5,19 @@
  * Date: 08.10.16
  * Time: 0:31
  */
-namespace Model;
+namespace IWG\Model;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToOne;
 
 /**
  * Class Book
@@ -24,21 +32,18 @@ class Book implements BookInterface
      * @Column(type="integer")
      * @GeneratedValue
      * @var int
-     * @Groups({"default"})
      */
     protected $id;
 
     /**
      * @Column(type="string")
      * @var string
-     * @Groups({"default"})
      */
     protected $name;
 
     /**
      * @Column(type="integer")
      * @var int
-     * @Groups({"default"})
      */
     protected $yearOfIssue;
 
@@ -46,13 +51,11 @@ class Book implements BookInterface
      * @ManyToMany(targetEntity="Author", inversedBy="books")
      * @JoinTable(name="books_authors")
      * @var AuthorInterface[]
-     * @Groups({"default"})
      */
     protected $authors; // many to many relation
 
     /**
      * @ManyToOne(targetEntity="Category", inversedBy="books")
-     * @Groups({"default"})
      */
     protected $category;
 

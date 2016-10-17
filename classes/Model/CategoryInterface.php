@@ -6,7 +6,7 @@
  * Time: 22:28
  */
 
-namespace Model;
+namespace IWG\Model;
 
 
 use Doctrine\Common\Collections\ArrayCollection;

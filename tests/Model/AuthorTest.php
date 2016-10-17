@@ -11,8 +11,8 @@
 
 namespace Test\Model;
 
-use Model\Author;
-use Model\AuthorInterface;
+use IWG\Model\Author;
+use IWG\Model\AuthorInterface;
 use Test\Model\IWGModelTestCase;
 
 class AuthorTest extends IWGModelTestCase
@@ -40,7 +40,7 @@ class AuthorTest extends IWGModelTestCase
     public function testAuthorReading()
     {
         $this->markTestSkipped("skipped");
-        $repo = self::$entity_manager->getRepository('Model\\Author');
+        $repo = self::$entity_manager->getRepository('IWG\\Model\\Author');
         /** @var  $authors AuthorInterface[] */
         $authors = $repo->findAll();
         $this->assertNotEmpty($authors);
@@ -52,7 +52,7 @@ class AuthorTest extends IWGModelTestCase
 
     private function authorReading()
     {
-        $repo = self::$entity_manager->getRepository('Model\\Author');
+        $repo = self::$entity_manager->getRepository('IWG\\Model\\Author');
         /** @var  $authors AuthorInterface[] */
         $authors = $repo->findAll();
         $this->assertNotEmpty($authors);

@@ -6,4 +6,5 @@
  * Time: 22:31
  */
 $loader = require __DIR__ . '/../vendor/autoload.php';
-$loader->add('Test\\', __DIR__);
+echo "autoload " . 'Test\\' . ' to ' . __DIR__ ;
+$loader->add('Test\\', __DIR__ . '/');

@@ -6,7 +6,7 @@
  * Time: 11:51
  */
 
-namespace ServiceProvider;
+namespace IWG\ServiceProvider;
 
 
 use Pimple\Container;

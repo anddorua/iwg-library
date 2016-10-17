@@ -6,7 +6,7 @@
  * Time: 20:03
  */
 
-namespace Exception;
+namespace IWG\Exception;
 
 
 class EOperationDeny extends \Exception

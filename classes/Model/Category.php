@@ -6,12 +6,20 @@
  * Time: 0:47
  */
 
-namespace Model;
+namespace IWG\Model;
 use Doctrine\Common\Collections\ArrayCollection;
-//use Doctrine\ORM\Mapping as ORM;
-//use JMS\Serializer\Annotation as JMS ;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
+
 /**
  * Class Category
  * @package Model
@@ -26,23 +34,18 @@ class Category implements CategoryInterface, OwnFieldsAwareInterface
      * @Id
      * @Column(type="integer")
      * @GeneratedValue
-     * @Groups({"default"})
      */
     protected $id;
 
     /**
      * @var string
      * @Column(type="string")
-     * @Groups({"default"})
      */
     protected $name;
 
     /**
      * @OneToMany(targetEntity="Book", mappedBy="category")
      * @var BookInterface[]
-     * @Groups({"book-finder"})
-     * @MaxDepth(1)
-     * @Exclude
      */
     protected $books = null;
 

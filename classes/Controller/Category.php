@@ -6,14 +6,14 @@
  * Time: 18:23
  */
 
-namespace Controller;
+namespace IWG\Controller;
 
-use Exception\EOperationDeny;
+use IWG\Exception\EOperationDeny;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 use Doctrine\ORM\EntityManager;
-use Exception\EModel;
+use IWG\Exception\EModel;
 use Silex\ControllerCollection;
 use Silex\Application;
 use JMS\Serializer;
@@ -22,7 +22,7 @@ class Category extends UnifiedController
 {
     public function __construct()
     {
-        $this->entityClass = 'Model\\Category';
+        $this->entityClass = 'IWG\\Model\\Category';
     }
 
 
@@ -53,7 +53,7 @@ class Category extends UnifiedController
     /**
      * @param EntityManager $em
      * @param int $id
-     * @return \Model\Category
+     * @return \IWG\Model\Category
      * @throws EModel
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -61,7 +61,7 @@ class Category extends UnifiedController
      */
     public static function findCategory(EntityManager $em, $id)
     {
-        return self::findSingleEntity($em, 'Model\\Category', $id);
+        return self::findSingleEntity($em, 'IWG\\Model\\Category', $id);
     }
 
     protected function assignOwnFields($entityDest, $entitySrc)

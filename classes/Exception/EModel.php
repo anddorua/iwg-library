@@ -6,7 +6,7 @@
  * Time: 11:31
  */
 
-namespace Exception;
+namespace IWG\Exception;
 
 
 class EModel extends \Exception

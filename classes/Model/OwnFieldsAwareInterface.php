@@ -6,7 +6,7 @@
  * Time: 16:53
  */
 
-namespace Model;
+namespace IWG\Model;
 
 
 interface OwnFieldsAwareInterface

@@ -38,7 +38,7 @@ $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => require('config/dbal.php'),
 ));
 
-$app->register(new \ServiceProvider\EMServiceProvider(), [
+$app->register(new \IWG\ServiceProvider\EMServiceProvider(), [
     'em.devMode' => true,
 ]);
 
@@ -48,24 +48,24 @@ $app->register(new Silex\Provider\VarDumperServiceProvider());
 
 $app->register(new Silex\Provider\ValidatorServiceProvider());
 
-$app->register(new \ServiceProvider\DefaultFormatProvider(), [
+$app->register(new \IWG\ServiceProvider\DefaultFormatProvider(), [
     'default_format.support' => ['json', 'xml'],
 ]);
 
-$app->register(new \ServiceProvider\RequestFormatProvider());
+$app->register(new \IWG\ServiceProvider\RequestFormatProvider());
 
-$app->register(new \ServiceProvider\JMSServiceProvider(), [
+$app->register(new \IWG\ServiceProvider\JMSServiceProvider(), [
     'jms.metadata-dir' => __DIR__ . "/config/metadata",
 ]);
 
-$app->mount('categories', new Controller\Category());
-$app->mount('authors', new Controller\Author());
-$app->mount('books', new Controller\Book());
+$app->mount('categories', new \IWG\Controller\Category());
+$app->mount('authors', new \IWG\Controller\Author());
+$app->mount('books', new \IWG\Controller\Book());
 $app->get('/', function() use ($app) {
     return $app->redirect('/front/index.html');
 });
 
-$app->error(function (\Exception\EModel $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+$app->error(function (\IWG\Exception\EModel $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
     $format = $app['default_format']($request);
     return new \Symfony\Component\HttpFoundation\Response($app['serializer']->serialize(
         [
@@ -77,7 +77,7 @@ $app->error(function (\Exception\EModel $e, \Symfony\Component\HttpFoundation\Re
     );
 });
 
-$app->error(function (\Exception\EValidation $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+$app->error(function (\IWG\Exception\EValidation $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
     $format = $app['default_format']($request);
     return new \Symfony\Component\HttpFoundation\Response($app['serializer']->serialize(
         [
@@ -90,7 +90,7 @@ $app->error(function (\Exception\EValidation $e, \Symfony\Component\HttpFoundati
     );
 });
 
-$app->error(function (\Exception\EOperationDeny $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+$app->error(function (\IWG\Exception\EOperationDeny $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
     $format = $app['default_format']($request);
     return new \Symfony\Component\HttpFoundation\Response($app['serializer']->serialize(
         [

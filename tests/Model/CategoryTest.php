@@ -8,8 +8,8 @@
 
 namespace Test\Model;
 
-use Model\Category;
-use Model\CategoryInterface;
+use IWG\Model\Category;
+use IWG\Model\CategoryInterface;
 use Test\Model\IWGModelTestCase;
 
 
@@ -38,7 +38,7 @@ class CategoryTest extends IWGModelTestCase
     public function testCategoryReading()
     {
         $this->markTestSkipped("skipped");
-        $repo = self::$entity_manager->getRepository('Model\\Category');
+        $repo = self::$entity_manager->getRepository('IWG\\Model\\Category');
         /** @var $categories CategoryInterface[] */
         $categories = $repo->findAll();
         $this->assertNotEmpty($categories);
@@ -48,7 +48,7 @@ class CategoryTest extends IWGModelTestCase
 
     private function entityReading()
     {
-        $repo = self::$entity_manager->getRepository('Model\\Category');
+        $repo = self::$entity_manager->getRepository('IWG\\Model\\Category');
         /** @var $categories CategoryInterface[] */
         $categories = $repo->findAll();
         $this->assertNotEmpty($categories);

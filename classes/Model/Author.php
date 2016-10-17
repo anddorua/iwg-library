@@ -8,10 +8,19 @@
  * Time: 21:40
  */
 
-namespace Model;
+namespace IWG\Model;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Mapping\ClassMetadata;
 use Symfony\Component\Validator\Constraints as Assert;
+use Doctrine\ORM\Mapping\Table;
+use Doctrine\ORM\Mapping\Entity;
+use Doctrine\ORM\Mapping\Id;
+use Doctrine\ORM\Mapping\GeneratedValue;
+use Doctrine\ORM\Mapping\Column;
+use Doctrine\ORM\Mapping\ManyToMany;
+use Doctrine\ORM\Mapping\JoinTable;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Doctrine\ORM\Mapping\OneToMany;
 
 
 /**
@@ -26,28 +35,24 @@ class Author implements AuthorInterface
      * @var int
      * @Id @Column(type="integer")
      * @GeneratedValue
-     * @Groups({"default"})
      */
     protected $id;
 
     /**
      * @var string
      * @Column(type="string")
-     * @Groups({"default"})
      */
     protected $name;
 
     /**
      * @var string
      * @Column(type="string")
-     * @Groups({"default"})
      */
     protected $fName;
 
     /**
      * @var int
      * @Column(type="integer")
-     * @Groups({"default"})
      */
     protected $yearOfBirth;
 

@@ -6,7 +6,7 @@
  * Time: 12:22
  */
 
-namespace Exception;
+namespace IWG\Exception;
 
 
 use Exception;

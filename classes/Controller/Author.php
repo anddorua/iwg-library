@@ -6,13 +6,13 @@
  * Time: 0:10
  */
 
-namespace Controller;
+namespace IWG\Controller;
 
 
 use Doctrine\ORM\EntityManager;
 use Silex\ControllerCollection;
 use Silex\Application;
-use Exception\EModel;
+use IWG\Exception\EModel;
 
 
 class Author extends UnifiedController
@@ -20,7 +20,7 @@ class Author extends UnifiedController
 
     public function __construct()
     {
-        $this->entityClass = 'Model\\Author';
+        $this->entityClass = 'IWG\\Model\\Author';
     }
 
     protected function getEntityLocation(Application $app, $entity)
@@ -48,14 +48,14 @@ class Author extends UnifiedController
     protected function testCanDelete($author)
     {
         if ($author->getBooks()->count() > 0) {
-            throw new \Exception\EOperationDeny("Author linked to books.", 409);
+            throw new \IWG\Exception\EOperationDeny("Author linked to books.", 409);
         }
     }
 
     /**
      * @param EntityManager $em
      * @param int $id
-     * @return \Model\Author
+     * @return \IWG\Model\Author
      * @throws EModel
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -63,6 +63,6 @@ class Author extends UnifiedController
      */
     public static function findAuthor(EntityManager $em, $id)
     {
-        return self::findSingleEntity($em, 'Model\\Author', $id);
+        return self::findSingleEntity($em, 'IWG\\Model\\Author', $id);
     }
 }

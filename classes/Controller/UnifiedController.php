@@ -6,17 +6,16 @@
  * Time: 18:13
  */
 
-namespace Controller;
+namespace IWG\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Exception\EOperationDeny;
+use IWG\Exception\EOperationDeny;
 use Silex\Api\ControllerProviderInterface;
-use Silex\ControllerCollection;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Exception\EModel;
-use Exception\EValidation;
+use IWG\Exception\EModel;
+use IWG\Exception\EValidation;
 
 
 abstract class UnifiedController implements ControllerProviderInterface
@@ -56,7 +55,7 @@ abstract class UnifiedController implements ControllerProviderInterface
 
     public function postEntityUnified(Application $app, Request $request)
     {
-        /** @var \Model\Category $category */
+        /** @var \IWG\Model\Category $category */
         $entity = $app['jms']->deserialize(
             $request->getContent(),
             $this->entityClass,
@@ -82,7 +81,7 @@ abstract class UnifiedController implements ControllerProviderInterface
         $em = $app['em'];
         $entity = self::findSingleEntity($em, $this->entityClass, $id);
 
-        /** @var \Model\Category $entityNew */
+        /** @var \IWG\Model\Category $entityNew */
         $entityNew = $app['jms']->deserialize(
             $request->getContent(),
             $this->entityClass,

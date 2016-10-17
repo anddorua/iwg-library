@@ -8,11 +8,11 @@
 
 namespace Test\Model;
 
-use Model\Book;
+use IWG\Model\Book;
 use Test\Model\IWGModelTestCase;
-use Model\Author;
-use Model\Category;
-use Model\CategoryInterface;
+use IWG\Model\Author;
+use IWG\Model\Category;
+use IWG\Model\CategoryInterface;
 
 class BookTest extends IWGModelTestCase
 {
@@ -52,13 +52,13 @@ class BookTest extends IWGModelTestCase
         $this->makeCategories();
         self::$entity_manager->flush();
 
-        $repo = self::$entity_manager->getRepository('Model\\Category');
+        $repo = self::$entity_manager->getRepository('IWG\\Model\\Category');
         /** @var $categories CategoryInterface[] */
         $categories = $repo->findAll();
         $this->assertNotEmpty($categories);
         $this->assertEquals(count($this->categories), count($categories), 'categories should be counted as ' . count($this->categories));
 
-        $repo = self::$entity_manager->getRepository('Model\\Author');
+        $repo = self::$entity_manager->getRepository('IWG\\Model\\Author');
         /** @var $categories CategoryInterface[] */
         $authors = $repo->findAll();
         $this->assertNotEmpty($authors);
@@ -71,14 +71,14 @@ class BookTest extends IWGModelTestCase
         $this->makeCategories();
         self::$entity_manager->flush();
 
-        $dql = 'SELECT c FROM Model\\Category c WHERE c.name = :name';
+        $dql = 'SELECT c FROM IWG\\Model\\Category c WHERE c.name = :name';
         $cat_fiction = self::$entity_manager->createQuery($dql)
             ->setParameter('name', 'fiction')
             ->getSingleResult();
         $this->assertEquals('fiction', $cat_fiction->getName());
 
 
-        $dql = 'SELECT a FROM Model\\Author a WHERE a.fName = :fname';
+        $dql = 'SELECT a FROM IWG\\Model\\Author a WHERE a.fName = :fname';
         $author = self::$entity_manager->createQuery($dql)
             ->setParameter('fname', 'Simak')
             ->getSingleResult();

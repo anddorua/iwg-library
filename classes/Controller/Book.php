@@ -6,24 +6,24 @@
  * Time: 1:16
  */
 
-namespace Controller;
+namespace IWG\Controller;
 
 use Doctrine\ORM\EntityManager;
-use Model\Author;
+use IWG\Model\Author;
 use Silex\Api\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Exception\EModel;
-use Exception\EValidation;
+use IWG\Exception\EModel;
+use IWG\Exception\EValidation;
 
 class Book extends UnifiedController
 {
 
     public function __construct()
     {
-        $this->entityClass = 'Model\\Book';
+        $this->entityClass = 'IWG\\Model\\Book';
     }
 
     public function connect(Application $app)
@@ -59,7 +59,7 @@ class Book extends UnifiedController
     {
         /** @var EntityManager $em */
         $em = $app['em'];
-        $categories = $em->getRepository('Model\\Book')->findAll();
+        $categories = $em->getRepository('IWG\\Model\\Book')->findAll();
         $format = $app['default_format']($request);
         return new Response($app['jms']->serialize($categories, $format), 200, [
             'Content-Type' => $request->getMimeType($format),
@@ -77,7 +77,7 @@ class Book extends UnifiedController
     {
         /** @var EntityManager $em */
         $em = $app['em'];
-        $book = $em->find('Model\\Book', $id);
+        $book = $em->find('IWG\\Model\\Book', $id);
         if ($book === null) {
             throw new EModel("Book $id not found", 404);
         }
@@ -89,10 +89,10 @@ class Book extends UnifiedController
 
     public function postEntity(Application $app, Request $request)
     {
-        /** @var \Model\Book $book */
+        /** @var \IWG\Model\Book $book */
         $book = $app['jms']->deserialize(
             $request->getContent(),
-            'Model\\Book',
+            'IWG\\Model\\Book',
             $app['request_format']($request)
         );
 
@@ -113,17 +113,17 @@ class Book extends UnifiedController
 
     public function putCategory(Application $app, Request $request, $id)
     {
-        /** @var \Model\Category $categoryToFind */
+        /** @var \IWG\Model\Category $categoryToFind */
         $categoryToFind = $app['jms']->deserialize(
             $request->getContent(),
-            'Model\\Category',
+            'IWG\\Model\\Category',
             $app['request_format']($request)
         );
 
         /** @var EntityManager $em */
         $em = $app['em'];
-        /** @var \Model\Category $category */
-        $category = \Controller\Category::findCategory($em, $categoryToFind->getId());
+        /** @var \IWG\Model\Category $category */
+        $category = \IWG\Controller\Category::findCategory($em, $categoryToFind->getId());
 
         $book = $this->findBook($em, $id);
 
@@ -139,10 +139,10 @@ class Book extends UnifiedController
 
     public function putAuthors(Application $app, Request $request, $id)
     {
-        /** @var \Model\Author[] $authorsToFind */
+        /** @var \IWG\Model\Author[] $authorsToFind */
         $authorsToFind = $app['jms']->deserialize(
             $request->getContent(),
-            'Doctrine\\Common\\Collections\\ArrayCollection<Model\\Author>',
+            'Doctrine\\Common\\Collections\\ArrayCollection<IWG\\Model\\Author>',
             $app['request_format']($request)
         );
 
@@ -150,7 +150,7 @@ class Book extends UnifiedController
         $em = $app['em'];
 
         $authors = array_map(function(Author $authorToFind) use ($em) {
-            return \Controller\Author::findAuthor($em, $authorToFind->getId());
+            return \IWG\Controller\Author::findAuthor($em, $authorToFind->getId());
         }, $authorsToFind);
 
         $book = $this->findBook($em, $id);
@@ -173,7 +173,7 @@ class Book extends UnifiedController
     /**
      * @param EntityManager $em
      * @param integer $id
-     * @return \Model\Book
+     * @return \IWG\Model\Book
      * @throws EModel
      * @throws \Doctrine\ORM\ORMException
      * @throws \Doctrine\ORM\OptimisticLockException
@@ -181,7 +181,7 @@ class Book extends UnifiedController
      */
     private function findBook(EntityManager $em, $id)
     {
-        $book = $em->find('Model\\Book', $id);
+        $book = $em->find('IWG\\Model\\Book', $id);
         if ($book === null) {
             throw new EModel("Book $id not found", 404);
         }

@@ -1,4 +1,4 @@
-Model\Book:
+IWG\Model\Book:
   exclusion_policy: ALL
   properties:
     id:
@@ -12,7 +12,7 @@ Model\Book:
       type: integer
     category:
       expose: true
-      type: Model\Category
+      type: IWG\Model\Category
     authors:
       expose: true
-      type: Doctrine\Common\Collections\ArrayCollection<Model\Author>
+      type: Doctrine\Common\Collections\ArrayCollection<IWG\Model\Author>

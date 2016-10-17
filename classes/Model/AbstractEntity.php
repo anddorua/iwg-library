@@ -8,7 +8,7 @@
  * copypasted from https://www.sitepoint.com/building-a-domain-model/
  */
 
-namespace Model;
+namespace IWG\Model;
 
 
 /**
