@@ -18,7 +18,7 @@ use Silex\ControllerCollection;
 use Silex\Application;
 use JMS\Serializer;
 
-class Category extends UnifiedController
+class CategoryController extends UnifiedController
 {
     public function __construct()
     {

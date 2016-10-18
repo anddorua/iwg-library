@@ -10,7 +10,6 @@ namespace IWG\Controller;
 
 use Doctrine\ORM\EntityManager;
 use IWG\Model\Author;
-use Silex\Api\ControllerProviderInterface;
 use Silex\ControllerCollection;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\Request;
@@ -18,7 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use IWG\Exception\EModel;
 use IWG\Exception\EValidation;
 
-class Book extends UnifiedController
+class BookController extends UnifiedController
 {
 
     public function __construct()
@@ -123,7 +122,7 @@ class Book extends UnifiedController
         /** @var EntityManager $em */
         $em = $app['em'];
         /** @var \IWG\Model\Category $category */
-        $category = \IWG\Controller\Category::findCategory($em, $categoryToFind->getId());
+        $category = \IWG\Controller\CategoryController::findCategory($em, $categoryToFind->getId());
 
         $book = $this->findBook($em, $id);
 
@@ -150,7 +149,7 @@ class Book extends UnifiedController
         $em = $app['em'];
 
         $authors = array_map(function(Author $authorToFind) use ($em) {
-            return \IWG\Controller\Author::findAuthor($em, $authorToFind->getId());
+            return \IWG\Controller\AuthorController::findAuthor($em, $authorToFind->getId());
         }, $authorsToFind);
 
         $book = $this->findBook($em, $id);

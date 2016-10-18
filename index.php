@@ -31,7 +31,7 @@ $app = new Silex\Application();
 $app['debug'] = true;
 
 $app->register(new Silex\Provider\MonologServiceProvider(), array(
-    'monolog.logfile' => __DIR__.'/development.log',
+    'monolog.logfile' => __DIR__.'/log/development.log',
 ));
 
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
@@ -58,9 +58,9 @@ $app->register(new \IWG\ServiceProvider\JMSServiceProvider(), [
     'jms.metadata-dir' => __DIR__ . "/config/metadata",
 ]);
 
-$app->mount('categories', new \IWG\Controller\Category());
-$app->mount('authors', new \IWG\Controller\Author());
-$app->mount('books', new \IWG\Controller\Book());
+$app->mount('categories', new \IWG\Controller\CategoryController());
+$app->mount('authors', new \IWG\Controller\AuthorController());
+$app->mount('books', new \IWG\Controller\BookController());
 $app->get('/', function() use ($app) {
     return $app->redirect('/front/index.html');
 });

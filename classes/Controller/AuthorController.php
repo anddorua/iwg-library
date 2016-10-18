@@ -15,7 +15,7 @@ use Silex\Application;
 use IWG\Exception\EModel;
 
 
-class Author extends UnifiedController
+class AuthorController extends UnifiedController
 {
 
     public function __construct()
