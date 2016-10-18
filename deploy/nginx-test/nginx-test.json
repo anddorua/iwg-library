@@ -1,0 +1,45 @@
+{
+    "project": "nginx-test",
+    "services": [{
+        "id": "frontend",
+        "apps": [
+            {
+                "id": "nginx",
+                "domain": {
+                    "type": "HTTP",
+                    "uri": "iwg-lib-nginx-test.sloppy.zone"
+                },
+                "volumes": [
+                ],
+                "port_mappings": [
+                    {
+                        "container_port": 80
+                    }
+                ],
+                "mem": 256,
+                "image": "mapleukraine/nginx:v1",
+                "instances": 1,
+                "env": {
+                },
+                "dependencies": [
+                ]
+            },
+            {
+                "id": "php",
+                "port_mappings": [
+                    {
+                        "container_port": 80
+                    }
+                ],
+                "mem": 256,
+                "image": "allansimon/php7-fpm-postgresql",
+                "instances": 1,
+                "env": {
+                },
+                "dependencies": [
+                ]
+            }
+        ]
+}
+]
+}

@@ -34,6 +34,8 @@ $app->register(new Silex\Provider\MonologServiceProvider(), array(
     'monolog.logfile' => __DIR__.'/log/development.log',
 ));
 
+\Symfony\Component\Debug\ExceptionHandler::register();
+
 $app->register(new Silex\Provider\DoctrineServiceProvider(), array(
     'db.options' => require('config/dbal.php'),
 ));
@@ -101,5 +103,19 @@ $app->error(function (\IWG\Exception\EOperationDeny $e, \Symfony\Component\HttpF
         ]
     );
 });
+
+$app->error(function (\Exception $e, \Symfony\Component\HttpFoundation\Request $request, $code) use ($app) {
+    $format = $app['default_format']($request);
+    return new \Symfony\Component\HttpFoundation\Response($app['serializer']->serialize(
+        [
+            'message' => $e->getMessage(),
+            'type' => get_class($e),
+            'code' => $e->getCode(),
+        ], $format), $e->getCode(), [
+            'Content-Type' => $request->getMimeType($format),
+        ]
+    );
+});
+
 
 $app->run();
